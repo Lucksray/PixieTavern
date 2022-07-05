@@ -16,6 +16,4 @@ public interface CrudController<T> {
 
 	int delete();
 
-	void initialise();
-
 }

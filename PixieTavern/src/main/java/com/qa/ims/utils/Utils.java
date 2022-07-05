@@ -20,6 +20,20 @@ public class Utils {
 		scanner = new Scanner(System.in);
 	}
 
+	public float getFloat() {
+		String input = null;
+		float floatInput = 0.0f;
+		do {
+			try {
+				input = getString();
+				floatInput = Float.parseFloat(input);
+			} catch (NumberFormatException nfe) {
+				LOGGER.info("Error - Please enter a price tag");
+			}
+		}while (floatInput == 0.0f);
+		return floatInput;			
+	}
+
 	public Long getLong() {
 		String input = null;
 		Long longInput = null;
