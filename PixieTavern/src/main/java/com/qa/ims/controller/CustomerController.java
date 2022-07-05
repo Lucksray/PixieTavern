@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.InitData.DataInit;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.Utils;
@@ -66,6 +67,18 @@ public class CustomerController implements CrudController<Customer> {
 		Customer customer = customerDAO.update(new Customer(id, firstName, surname));
 		LOGGER.info("Customer Updated");
 		return customer;
+	}
+	
+	@Override
+	public void initialise() {
+		try {DataInit dInit = new DataInit();
+			List<String> data = dInit.customerInit();
+			customerDAO.create(new Customer(data.get(0),data.get(1)));
+			customerDAO.create(new Customer(data.get(2),data.get(3)));
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
 	}
 
 	/**

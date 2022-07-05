@@ -86,6 +86,9 @@ public class IMS {
 		case DELETE:
 			crudController.delete();
 			break;
+		case INIT:
+			crudController.initialise();
+			break;
 		case RETURN:
 			break;
 		default:
