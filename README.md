@@ -1,89 +1,52 @@
-Coverage: 34%
-# Project Title
+# Intro
 
-One Paragraph of project description goes here
+Pixie Tavern is a simple Java to MYSQL integration program that allows an owner to edit and keep track of items in the database as well as customers.
+This repository holds all coding for Java, maven testing and other files that are necessary for Java to run as expected.
+The rest of this README file holds information on updates, future plans, a risk assessment and problems found along the way.
 
-## Getting Started
+## Contents
+* [Road map](#Road Map)
+    * [Version 0.1](#version-01)
+    * [Version 0.2](#version-02)
+    * [Version 0.3](#version-03)
+    * [Version 0.4](#version-04)
+    * [Version 0.5](#version-05)
+* [Known problems](#known-problems)
+* [Fixes](#fixes)
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
 
-What things you need to install the software and how to install them
+#### Road Map
 
-```
-Give examples
-```
+###### **Version 0.1**
 
-### Installing
+For the owner to be able to view customers and items on the database.
+For the owner to be able to delete, update and add customers and items on the database.
 
-A step by step series of examples that tell you how to get a development env running
+###### **Version 0.2**
 
-Say what the step will be
+To allow customers to have a login for the database which saves their previous and current orders for reference for the owner's view.
+To have a compulsory login portal for customers and owner to allow privileges while browsing the database.
 
-```
-Give the example
-```
+###### **Version 0.3**
 
-And repeat
+To allow customers to add to, delete items from and submit their current trolleys
+To allow customers to *view* their previous trolleys and orders.
+To allow the owner to accept orders.
+To allow the owner to view which orders have been accept or not.
 
-```
-until finished
-```
+###### **Version 0.4**
 
-End with an example of getting some data out of the system or using it for a little demo
+To make the login optional for those who wish to just browse items from the database.
+To allow non-sign up customers to place orders from trolleys with limited items.
+Upon submitting an order, a double check of signing in or signing up their login details.
 
-## Running the tests
+###### **Version 0.5**
 
-Explain how to run the automated tests for this system. Break down into which tests and what they do
+To make a few infrastructure tweaks to allow smoother and faster data transfer between the database and application.
+To make a few design tweaks to the GUI to make it more pleasing to the eye.
 
-### Unit Tests 
 
-Explain what these tests test, why and how to run them
+#### Known problems
 
-```
-Give an example
-```
-
-### Integration Tests 
-Explain what these tests test, why and how to run them
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Maven](https://maven.apache.org/) - Dependency Management
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning.
-
-## Authors
-
-* **Chris Perrins** - *Initial work* - [christophperrins](https://github.com/christophperrins)
-
-## License
-
-This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md) file for details 
-
-*For help in [Choosing a license](https://choosealicense.com/)*
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+#### Fixes
