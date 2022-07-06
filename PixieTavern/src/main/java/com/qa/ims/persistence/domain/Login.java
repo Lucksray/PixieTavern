@@ -8,6 +8,7 @@ public class Login {
 	private String username;
 	private String password;
 	private Long cusId;
+	private String privilege = "custo";
 	
 	public Login(String username, String password, Long cusId) {
 		this.setUsername(username);
@@ -15,11 +16,12 @@ public class Login {
 		this.setCusId(cusId);
 	}
 	
-	public Login(Long id, String username, String password, Long cusId) {
+	public Login(Long id, String username, String password, Long cusId, String privilege) {
 		this.setId(id);
 		this.setUsername(username);
 		this.setPassword(password);
 		this.setCusId(cusId);
+		this.privilege = privilege;
 	}
 	
 	public Long getId() {return this.id;}
@@ -30,6 +32,13 @@ public class Login {
 	public void setPassword(String password) {this.password = password;}
 	public Long getCusId() {return this.cusId;}
 	public void setCusId(Long cusId) {this.cusId = cusId;}
+	public String getPrivilege() {return this.privilege;}
+	public void setPrivilege(String privilege) {this.privilege = privilege;}
+
+	@Override
+	public String toString() {
+		return "username=" + username + ", cusId=" + cusId + ", privilege=" + privilege + "]";
+	}
 
 	@Override
 	public int hashCode() {

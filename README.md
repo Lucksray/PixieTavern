@@ -5,7 +5,8 @@ This repository holds all coding for Java, maven testing and other files that ar
 The rest of this README file holds information on updates, future plans, a risk assessment and problems found along the way.
 
 ## Contents
-* [Road map](#Road Map)
+* [Current Version & Limit](#current-update)
+* [Road map](#road-map)
     * [Version 0.1](#version-01)
     * [Version 0.2](#version-02)
     * [Version 0.3](#version-03)
@@ -15,8 +16,19 @@ The rest of this README file holds information on updates, future plans, a risk 
 * [Fixes](#fixes)
 
 
+### Current update
 
-#### Road Map
+The ~~current~~ version 0.1 allowed the owner to access the database and add, edit, delete and view all data on the database with no restrictions.
+This version should only be given out to those that the owner puts their trust in and will help build upon the database.
+This version should not be released to the public before any access limitation is put in place to allow some privacy for personal information and resrictions on editting the databases more sensitive data.
+
+The current version that the main version is updated to is version 0.2.
+The owner and customer are able to access the information on the database although the customer has limited access to information.
+A customer can only view non-personal information and information about themselves from the database.
+This information restriction is currently hard-coded in and requires a sign in on all necessary Methods.
+
+
+### Road Map
 
 ###### **Version 0.1**
 
@@ -49,4 +61,13 @@ To make a few design tweaks to the GUI to make it more pleasing to the eye.
 
 #### Known problems
 
+Here a list of known problems or fixes to be implemented as updates come out:
+- Not all access restricted Methods are implemented
+- The only way to give access rights to a new login user is to contact directly with the database server and change rights through the IDE
+- Not all Methods are functioning completely and require seperate class files to be written to explain what each Method does accurately
+
 #### Fixes
+
+- [ ] Not all access restricted Methods are implemented
+- [ ] The only way to give access rights to a new login user is to contact directly with the database server and change rights through the IDE
+- [ ] Not all Methods are functioning completely and require seperate class files to be written to explain what each Method does accurately

@@ -13,10 +13,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.DBUtils;
+import com.qa.ims.utils.Utils;
 
 public class LoginDAO implements Dao<Login> {
 	
 	public static final Logger LOGGER = LogManager.getLogger();
+	private final Utils utils = new Utils();
 	
 	@Override
 	public Login modelFromResultSet(ResultSet resultSet) throws SQLException{
@@ -24,13 +26,51 @@ public class LoginDAO implements Dao<Login> {
 		String username = resultSet.getString("username");
 		String password = resultSet.getString("password");
 		Long cusId = resultSet.getLong("cusId");
-		return new Login(id, username, password,cusId);
+		String privilege = resultSet.getString("privilege");
+		return new Login(id, username, password,cusId,privilege);
 	}
 	
 	@Override
 	public List<Login> readAll(){
-		LOGGER.info("You don't have the privileges");
-		return null;
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = read(username,password);
+		if ( log != null && log.getPrivilege().equals("admin")) {
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					Statement statement = connection.createStatement();
+					ResultSet resultSet = statement.executeQuery("SELECT * FROM logins");) {
+				List<Login> logins = new ArrayList<>();
+				while (resultSet.next()) {
+					logins.add(modelFromResultSet(resultSet));
+				}
+				return logins;
+				
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
+			}
+		} else {
+			LOGGER.info("You do not have the correct privileges");
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					PreparedStatement statement = connection.prepareStatement("SELECT * FROM logins WHERE id = ?");) {
+					statement.setLong(1, log.getId());
+					ResultSet resultSet = statement.executeQuery(); 
+				List<Login> logins = new ArrayList<>();
+				while (resultSet.next()) {
+					logins.add(modelFromResultSet(resultSet));
+				}
+				return logins;
+				
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
+			}
+		}
+		
+		return new ArrayList<>();
 	}
 	
 	public Login readLatest() {
@@ -68,6 +108,22 @@ public class LoginDAO implements Dao<Login> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM login WHERE id = ?");) {
 			statement.setLong(1, id);
+			try (ResultSet resultSet = statement.executeQuery();) {
+				resultSet.next();
+				return modelFromResultSet(resultSet);
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	public Login read(String username, String password) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM logins WHERE username=? AND password=?;");) {
+			statement.setString(1, username);
+			statement.setString(2, password);
 			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
 				return modelFromResultSet(resultSet);

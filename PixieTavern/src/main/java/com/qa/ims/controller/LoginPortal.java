@@ -17,6 +17,7 @@ public class LoginPortal implements CrudController<Login> {
 	
 	private LoginDAO loginDAO;
 	private Utils utils;
+	private Login userLogin;
 	
 	private CustomerDAO customerDAO = new CustomerDAO();
 	
@@ -28,8 +29,11 @@ public class LoginPortal implements CrudController<Login> {
 
 	@Override
 	public List<Login> readAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Login> logins = loginDAO.readAll();
+		for (Login login : logins) {
+			LOGGER.info(login);
+		}
+		return logins;
 	}
 
 	@Override
@@ -61,4 +65,12 @@ public class LoginPortal implements CrudController<Login> {
 		return 0;
 	}
 
+	public Login login(){
+		LOGGER.info("Please enter your username");
+		String username = utils.getString();
+		LOGGER.info("Please enter your password");
+		String password = utils.getString();
+		userLogin = loginDAO.read(username, password);
+		return userLogin;
+	}
 }
