@@ -97,6 +97,23 @@ public class CustomerDAO implements Dao<Customer> {
 		}
 		return null;
 	}
+	
+	public Long readId(String firstName, String surname) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT id FROM customers WHERE first_name=?, surname=?");){
+			statement.setString(1, firstName);
+			statement.setString(2, surname);
+			try (ResultSet resultSet = statement.executeQuery();){
+				resultSet.next();
+				Customer customer = modelFromResultSet(resultSet);
+				return customer.getId();
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
 
 	/**
 	 * Updates a customer in the database
