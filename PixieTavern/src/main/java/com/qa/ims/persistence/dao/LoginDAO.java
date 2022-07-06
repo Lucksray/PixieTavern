@@ -11,47 +11,42 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.DBUtils;
 import com.qa.ims.utils.Utils;
 
-public class CustomerDAO implements Dao<Customer> {
-
+public class LoginDAO implements Dao<Login> {
+	
 	public static final Logger LOGGER = LogManager.getLogger();
 	private final Utils utils = new Utils();
-	private final LoginDAO loginDAO = new LoginDAO();
-
+	
 	@Override
-	public Customer modelFromResultSet(ResultSet resultSet) throws SQLException {
+	public Login modelFromResultSet(ResultSet resultSet) throws SQLException{
 		Long id = resultSet.getLong("id");
-		String firstName = resultSet.getString("first_name");
-		String surname = resultSet.getString("surname");
-		return new Customer(id, firstName, surname);
+		String username = resultSet.getString("username");
+		String password = resultSet.getString("password");
+		Long cusId = resultSet.getLong("cusId");
+		String privilege = resultSet.getString("privilege");
+		return new Login(id, username, password,cusId,privilege);
 	}
-
-	/**
-	 * Reads all customers from the database
-	 * 
-	 * @return A list of customers
-	 */
+	
 	@Override
-	public List<Customer> readAll() {
+	public List<Login> readAll(){
 		LOGGER.info("Please sign in");
 		LOGGER.info("Username");
 		String username = utils.getString();
 		LOGGER.info("Password");
 		String password = utils.getString();
-		Login log = loginDAO.read(username,password);
+		Login log = read(username,password);
 		if ( log != null && log.getPrivilege().equals("admin")) {
 			try (Connection connection = DBUtils.getInstance().getConnection();
 					Statement statement = connection.createStatement();
-					ResultSet resultSet = statement.executeQuery("SELECT * FROM customers");) {
-				List<Customer> customers = new ArrayList<>();
+					ResultSet resultSet = statement.executeQuery("SELECT * FROM logins");) {
+				List<Login> logins = new ArrayList<>();
 				while (resultSet.next()) {
-					customers.add(modelFromResultSet(resultSet));
+					logins.add(modelFromResultSet(resultSet));
 				}
-				return customers;
+				return logins;
 				
 			} catch (SQLException e) {
 				LOGGER.debug(e);
@@ -60,27 +55,28 @@ public class CustomerDAO implements Dao<Customer> {
 		} else {
 			LOGGER.info("You do not have the correct privileges");
 			try (Connection connection = DBUtils.getInstance().getConnection();
-					PreparedStatement statement = connection.prepareStatement("SELECT * FROM customers WHERE id = ?");) {
+					PreparedStatement statement = connection.prepareStatement("SELECT * FROM logins WHERE id = ?");) {
 					statement.setLong(1, log.getId());
 					ResultSet resultSet = statement.executeQuery(); 
-				List<Customer> customers = new ArrayList<>();
+				List<Login> logins = new ArrayList<>();
 				while (resultSet.next()) {
-					customers.add(modelFromResultSet(resultSet));
+					logins.add(modelFromResultSet(resultSet));
 				}
-				return customers;
+				return logins;
 				
 			} catch (SQLException e) {
 				LOGGER.debug(e);
 				LOGGER.error(e.getMessage());
 			}
-		}		
+		}
+		
 		return new ArrayList<>();
 	}
-
-	public Customer readLatest() {
+	
+	public Login readLatest() {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT * FROM customers ORDER BY id DESC LIMIT 1");) {
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM logins ORDER BY id DESC LIMIT 1");) {
 			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
@@ -89,19 +85,15 @@ public class CustomerDAO implements Dao<Customer> {
 		}
 		return null;
 	}
-
-	/**
-	 * Creates a customer in the database
-	 * 
-	 * @param customer - takes in a customer object. id will be ignored
-	 */
+	
 	@Override
-	public Customer create(Customer customer) {
+	public Login create(Login login) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				PreparedStatement statement = connection
-						.prepareStatement("INSERT INTO customers(first_name, surname) VALUES (?, ?)");) {
-			statement.setString(1, customer.getFirstName());
-			statement.setString(2, customer.getSurname());
+						.prepareStatement("INSERT INTO logins(username, password, cusId) VALUES (?, ?, ?)");) {
+			statement.setString(1, login.getUsername());
+			statement.setString(2, login.getPassword());
+			statement.setLong(3, login.getCusId());
 			statement.executeUpdate();
 			return readLatest();
 		} catch (Exception e) {
@@ -110,11 +102,11 @@ public class CustomerDAO implements Dao<Customer> {
 		}
 		return null;
 	}
-
+	
 	@Override
-	public Customer read(Long id) {
+	public Login read(Long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM customers WHERE id = ?");) {
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM login WHERE id = ?");) {
 			statement.setLong(1, id);
 			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
@@ -127,15 +119,14 @@ public class CustomerDAO implements Dao<Customer> {
 		return null;
 	}
 	
-	public Long readId(String firstName, String surname) {
+	public Login read(String username, String password) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("SELECT id FROM customers WHERE first_name=?, surname=?");){
-			statement.setString(1, firstName);
-			statement.setString(2, surname);
-			try (ResultSet resultSet = statement.executeQuery();){
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM logins WHERE username=? AND password=?;");) {
+			statement.setString(1, username);
+			statement.setString(2, password);
+			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
-				Customer customer = modelFromResultSet(resultSet);
-				return customer.getId();
+				return modelFromResultSet(resultSet);
 			}
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -143,40 +134,28 @@ public class CustomerDAO implements Dao<Customer> {
 		}
 		return null;
 	}
-
-	/**
-	 * Updates a customer in the database
-	 * 
-	 * @param customer - takes in a customer object, the id field will be used to
-	 *                 update that customer in the database
-	 * @return
-	 */
+	
 	@Override
-	public Customer update(Customer customer) {
+	public Login update(Login login) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				PreparedStatement statement = connection
-						.prepareStatement("UPDATE customers SET first_name = ?, surname = ? WHERE id = ?");) {
-			statement.setString(1, customer.getFirstName());
-			statement.setString(2, customer.getSurname());
-			statement.setLong(3, customer.getId());
+						.prepareStatement("UPDATE logins SET username = ?, password = ? WHERE id = ?");) {
+			statement.setString(1, login.getUsername());
+			statement.setString(2, login.getPassword());
+			statement.setLong(3, login.getId());
 			statement.executeUpdate();
-			return read(customer.getId());
+			return read(login.getId());
 		} catch (Exception e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
 		return null;
 	}
-
-	/**
-	 * Deletes a customer in the database
-	 * 
-	 * @param id - id of the customer
-	 */
+	
 	@Override
 	public int delete(long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("DELETE FROM customers WHERE id = ?");) {
+				PreparedStatement statement = connection.prepareStatement("DELETE FROM login WHERE id = ?");) {
 			statement.setLong(1, id);
 			return statement.executeUpdate();
 		} catch (Exception e) {
