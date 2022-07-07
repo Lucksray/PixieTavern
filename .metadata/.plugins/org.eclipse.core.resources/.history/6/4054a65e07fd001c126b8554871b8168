@@ -1,0 +1,21 @@
+package com.qa.ims.persistence.domain;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.dao.LoginDAO;
+import com.qa.ims.utils.Utils;
+
+public class LoginPortal implements CrudController<Login> {
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	
+	private LoginDAO loginDAO;
+	private Utils utils;
+	
+	public LoginPortal(LoginDAO loginDAO, Utils utils) {
+		this.loginDAO = loginDAO;
+		this.utils = utils;
+	}
+
+}

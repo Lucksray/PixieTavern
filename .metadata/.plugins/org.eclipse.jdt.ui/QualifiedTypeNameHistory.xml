@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="java.util.logging.LogManager"/>
+    <fullyQualifiedTypeName name="org.junit.platform.commons.logging.Logger"/>
+    <fullyQualifiedTypeName name="java.io.BufferedReader"/>
+    <fullyQualifiedTypeName name="java.util.Properties"/>
+    <fullyQualifiedTypeName name="java.io.InputStream"/>
+    <fullyQualifiedTypeName name="com.qa.ims.InitData.DataInit"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Item"/>
+    <fullyQualifiedTypeName name="com.qa.ims.controller.ItemController"/>
+    <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.LoginPortal"/>
+    <fullyQualifiedTypeName name="org.apache.logging.log4j.LogManager"/>
+    <fullyQualifiedTypeName name="org.apache.logging.log4j.Logger"/>
+    <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Login"/>
+    <fullyQualifiedTypeName name="com.qa.ims.utils.Utils"/>
+</qualifiedTypeNameHistroy>

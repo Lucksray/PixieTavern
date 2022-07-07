@@ -12,11 +12,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.DBUtils;
+import com.qa.ims.utils.Utils;
 
 public class CustomerDAO implements Dao<Customer> {
 
 	public static final Logger LOGGER = LogManager.getLogger();
+	private final Utils utils = new Utils();
+	private final LoginDAO loginDAO = new LoginDAO();
 
 	@Override
 	public Customer modelFromResultSet(ResultSet resultSet) throws SQLException {
@@ -33,18 +37,43 @@ public class CustomerDAO implements Dao<Customer> {
 	 */
 	@Override
 	public List<Customer> readAll() {
-		try (Connection connection = DBUtils.getInstance().getConnection();
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT * FROM customers");) {
-			List<Customer> customers = new ArrayList<>();
-			while (resultSet.next()) {
-				customers.add(modelFromResultSet(resultSet));
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		if ( log != null && log.getPrivilege().equals("admin")) {
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					Statement statement = connection.createStatement();
+					ResultSet resultSet = statement.executeQuery("SELECT * FROM customers");) {
+				List<Customer> customers = new ArrayList<>();
+				while (resultSet.next()) {
+					customers.add(modelFromResultSet(resultSet));
+				}
+				return customers;
+				
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
 			}
-			return customers;
-		} catch (SQLException e) {
-			LOGGER.debug(e);
-			LOGGER.error(e.getMessage());
-		}
+		} else {
+			LOGGER.info("You do not have the correct privileges");
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					PreparedStatement statement = connection.prepareStatement("SELECT * FROM customers WHERE id = ?");) {
+					statement.setLong(1, log.getId());
+					ResultSet resultSet = statement.executeQuery(); 
+				List<Customer> customers = new ArrayList<>();
+				while (resultSet.next()) {
+					customers.add(modelFromResultSet(resultSet));
+				}
+				return customers;
+				
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
+			}
+		}		
 		return new ArrayList<>();
 	}
 
@@ -90,6 +119,23 @@ public class CustomerDAO implements Dao<Customer> {
 			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
 				return modelFromResultSet(resultSet);
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	public Long readId(String firstName, String surname) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT id FROM customers WHERE first_name=?, surname=?");){
+			statement.setString(1, firstName);
+			statement.setString(2, surname);
+			try (ResultSet resultSet = statement.executeQuery();){
+				resultSet.next();
+				Customer customer = modelFromResultSet(resultSet);
+				return customer.getId();
 			}
 		} catch (Exception e) {
 			LOGGER.debug(e);
