@@ -1,0 +1,78 @@
+package com.qa.ims.InitData;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class DataInit {
+	
+	private static final Logger LOGGER = LogManager.getLogger();
+	
+	private String cus1Name;
+	private String cus1Surname;
+	private String cus2Name;
+	private String cus2Surname;
+	
+	private String item1Name;	private float item1Price;
+	private String item2Name;	private float item2Price;
+	private String item3Name;	private float item3Price;
+	private String item4Name;	private float item4Price;
+	private String item5Name;	private float item5Price;
+	private String item6Name;	private float item6Price;
+	private String item7Name;	private float item7Price;
+	private String item8Name;	private float item8Price;
+	private String item9Name;	private float item9Price;
+	private String item10Name;	private float item10Price;
+	private String item11Name;	private float item11Price;
+	private String item12Name;	private float item12Price;
+	
+	private void customerInit(String properties) {
+		Properties cusProps = new Properties();
+		try (InputStream fis = ClassLoader.getSystemResourceAsStream(properties)){
+			cusProps.load(fis);
+		}catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		this.cus1Name = cusProps.getProperty("cus1Name", "");
+		this.cus1Surname = cusProps.getProperty("cus1Surname", "");
+		this.cus2Name = cusProps.getProperty("cus2Name", "");
+		this.cus2Surname = cusProps.getProperty("cus2Surname", "");
+		
+	}
+	
+	private void itemInit(String properties) {
+		Properties itemProps = new Properties();
+		try (InputStream fis = ClassLoader.getSystemResourceAsStream(properties)){
+			itemProps.load(fis);
+		}catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		this.item1Name = itemProps.getProperty("item1Name", "");	this.item1Price = Float.parseFloat(itemProps.getProperty("item1Price", "" ));
+		this.item2Name = itemProps.getProperty("item2Name", "");	this.item2Price = Float.parseFloat(itemProps.getProperty("item2Price",""));
+		this.item3Name = itemProps.getProperty("item3Name", "");	this.item3Price = Float.parseFloat(itemProps.getProperty("item3Price", ""));
+		this.item4Name = itemProps.getProperty("item4Name", "");	this.item4Price = Float.parseFloat(itemProps.getProperty("item4Price", ""));
+		this.item5Name = itemProps.getProperty("item5Name", "");	this.item5Price = Float.parseFloat(itemProps.getProperty("item5Price", ""));
+		this.item6Name = itemProps.getProperty("item6Name", "");	this.item6Price = Float.parseFloat(itemProps.getProperty("item6Price", ""));
+		this.item7Name = itemProps.getProperty("item7Name", "");	this.item7Price = Float.parseFloat(itemProps.getProperty("item7Price", ""));
+		this.item8Name = itemProps.getProperty("item8Name", "");	this.item8Price = Float.parseFloat(itemProps.getProperty("item8Price", ""));
+		this.item9Name = itemProps.getProperty("item9Name", "");
+		this.item10Name = itemProps.getProperty("item10Name", "");
+		this.item11Name = itemProps.getProperty("item11Name", "");
+		this.item12Name = itemProps.getProperty("item12Name", "");		
+	}
+	
+	
+	public List<String> customerInit() {
+		customerInit("customer.properties");
+		List<String> init = new ArrayList<>();
+		init.add(this.cus1Name);
+		init.add(this.cus1Surname);
+		init.add(this.cus2Name);
+		init.add(this.cus2Surname);
+		return init;
+	}
+}

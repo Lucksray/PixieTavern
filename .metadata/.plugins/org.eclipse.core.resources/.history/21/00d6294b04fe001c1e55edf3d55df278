@@ -1,0 +1,67 @@
+package com.qa.ims.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.dao.LoginDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.Utils;
+
+public class OrderController implements CrudController<Order>{
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	
+	private OrderDAO orderDAO;
+	private Utils utils;
+	private Login userLogin;
+	private ItemDAO itemDAO = new ItemDAO();
+	private ItemController itemController = new ItemController(itemDAO, utils);
+	private LoginDAO loginDAO = new LoginDAO();
+	
+	
+	public OrderController(OrderDAO orderDao, Utils utils) {
+		super();
+		this.orderDAO = orderDao;
+		this.utils = utils;
+	}
+
+	@Override
+	public List<Order> readAll() {
+		List<Order> orders = orderDAO.readAll();
+		for (Order order : orders) {
+			LOGGER.info(order);
+		}
+		return orders;
+	}
+	
+	@Override
+	public Order create() {
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		
+		itemController.readAll();
+		
+		LOGGER.info("What item would you like to order? (Name please)");
+		String itemName = utils.getString();
+		LOGGER.info("How many would you like?");
+		int amount = utils.getInt();
+		Long itemId = itemController.read(itemName);
+
+		
+		Order order = orderDAO.create(new Order(itemId,amount));
+		Long cusId = customer.getId();
+		Login login = loginDAO.create(new Login(username, password, cusId));
+		LOGGER.info("Login created and paired");
+		return login;		                                                   
+	}
+
+}

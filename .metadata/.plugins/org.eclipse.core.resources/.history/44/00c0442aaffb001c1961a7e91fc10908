@@ -1,0 +1,3 @@
+db.url=jdbc:mysql://localhost:3306/pixietavern
+db.user=root
+db.password=r00t

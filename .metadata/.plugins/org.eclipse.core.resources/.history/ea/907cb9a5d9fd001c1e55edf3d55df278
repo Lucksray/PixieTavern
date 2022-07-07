@@ -1,0 +1,24 @@
+package com.qa.ims.persistence.domain;
+
+public class Order {
+	
+	private Long id;
+	private Long cusId;
+	private Long itemId;
+	private int amount = 1;
+	private float totalCost;
+	
+	public Order(Long cusId, Long itemId) {
+		this.cusId = cusId;
+		this.itemId = itemId;
+	}
+	
+	public Order(Long id, Long cusId, Long itemId, int amount, float totalCost) {
+		this.id = id;
+		this.cusId = cusId;
+		this.itemId = itemId;
+		this.amount = amount;
+		this.totalCost = totalCost;
+	}
+
+}

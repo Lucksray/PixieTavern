@@ -1,0 +1,39 @@
+package com.qa.ims.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.LoginDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.utils.Utils;
+
+public class OrderController implements CrudController<Order>{
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	
+	private LoginDAO loginDAO;
+	private Utils utils;
+	private Login userLogin;
+	
+	private CustomerDAO customerDAO = new CustomerDAO();
+	
+	public OrderController(OrderDAO orderDao, Utils utils) {
+		super();
+		this.loginDAO = loginDAO;
+		this.utils = utils;
+	}
+
+	@Override
+	public List<Login> readAll() {
+		List<Login> logins = loginDAO.readAll();
+		for (Login login : logins) {
+			LOGGER.info(login);
+		}
+		return logins;
+	}
+
+}
