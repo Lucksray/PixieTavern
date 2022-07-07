@@ -1,0 +1,47 @@
+package com.qa.ims.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.dao.LoginDAO;
+import com.qa.ims.utils.Utils;
+
+public class LoginPortal implements CrudController<Login> {
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	
+	private LoginDAO loginDAO;
+	private Utils utils;
+	
+	public LoginPortal(LoginDAO loginDAO, Utils utils) {
+		this.loginDAO = loginDAO;
+		this.utils = utils;
+	}
+
+	@Override
+	public List<Login> readAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Login create() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Login update() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int delete() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

@@ -1,0 +1,58 @@
+package com.qa.ims.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.Utils;
+
+public class OrderController implements CrudController<Order>{
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	
+	private OrderDAO orderDAO;
+	private Utils utils;
+	private Login userLogin;
+	private ItemDAO itemDAO = new ItemDAO();
+	private ItemController itemController = new ItemController(itemDAO, utils);
+	
+	
+	public OrderController(OrderDAO orderDao, Utils utils) {
+		super();
+		this.orderDAO = orderDao;
+		this.utils = utils;
+	}
+
+	@Override
+	public List<Order> readAll() {
+		List<Order> orders = orderDAO.readAll();
+		for (Order order : orders) {
+			LOGGER.info(order);
+		}
+		return orders;
+	}
+	
+	@Override
+	public Order create() {
+		itemController.readAll();
+		
+		LOGGER.info("What item would you like to order? (Name please)");
+		String itemName = utils.getString();
+		LOGGER.info("How many would you like?");
+		int amount = utils.getInt();
+
+		
+		Customer customer = customerDAO.create(new Customer(firstName, surname));
+		Long cusId = customer.getId();
+		Login login = loginDAO.create(new Login(username, password, cusId));
+		LOGGER.info("Login created and paired");
+		return login;		                                                   
+	}
+
+}

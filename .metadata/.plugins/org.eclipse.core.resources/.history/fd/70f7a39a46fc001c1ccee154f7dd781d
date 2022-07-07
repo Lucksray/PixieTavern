@@ -1,0 +1,35 @@
+package com.qa.ims.InitData;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.util.Properties;
+
+public class DataInit {
+	
+	private static final Logger LOGGER = LogManager.getLogger();
+	
+	private final String cus1Name;
+	private final String cus1Surname;
+	private final String cus2Name;
+	private final String cus2Surname;
+	
+	private void customerInit(String properties) {
+		Properties cusProps = new Properties();
+		try (InputStream fis = ClassLoader.getSystemResourceAsStream(properties)){
+			cusProps.load(fis);
+		}catch (Exception e) {
+			LOGGER.error(e);
+		}
+		this.cus1Name = cusProps.getProperty("cus1Name", "");
+		this.cus1Surname = cusProps.getProperty("cus1Surname", "");
+		this.cus2Name = cusProps.getProperty("cus2Name", "");
+		this.cus2Surname = cusProps.getProperty("cus2Surname", "");
+		
+	}
+	
+	public void customerInit() {
+		customerInit("customer.properties");
+	}
+}

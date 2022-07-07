@@ -1,0 +1,16 @@
+INDEX VERSION 1.131+C:\Users\leonc\Documents\QA Training\Pixie's Tavern\_Code\IMS-Starter\.metadata\.plugins\org.eclipse.jdt.core
+3630835323.index
+523594842.index
+2780287431.index
+3009021051.index
+3468636127.index
+1463743703.index
+1254999007.index
+38186579.index
+1865797976.index
+1263967652.index
+645412813.index
+3628748535.index
+1818240837.index
+3017471643.index
+4012646777.index
