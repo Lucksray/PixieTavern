@@ -39,6 +39,11 @@ public class ItemController implements CrudController<Item> {
 		return items;
 	}
 	
+	public Long read(String itemName) {
+		Long id = itemDAO.read(itemName);
+		return id;
+	}
+	
 	/**
 	 * Creates a item by taking in user input
 	 */
@@ -60,7 +65,7 @@ public class ItemController implements CrudController<Item> {
 	public Item update() {
 		LOGGER.info("Please enter the id of the item you would like to update");
 		Long id = utils.getLong();
-		LOGGER.info("Please enter a first name");
+		LOGGER.info("Please enter the name");
 		String name = utils.getString();
 		LOGGER.info("Please enter the price");
 		float price = utils.getFloat();

@@ -106,7 +106,7 @@ public class LoginDAO implements Dao<Login> {
 	@Override
 	public Login read(Long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM login WHERE id = ?");) {
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM logins WHERE id = ?");) {
 			statement.setLong(1, id);
 			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
@@ -155,7 +155,7 @@ public class LoginDAO implements Dao<Login> {
 	@Override
 	public int delete(long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("DELETE FROM login WHERE id = ?");) {
+				PreparedStatement statement = connection.prepareStatement("DELETE FROM logins WHERE id = ?");) {
 			statement.setLong(1, id);
 			return statement.executeUpdate();
 		} catch (Exception e) {

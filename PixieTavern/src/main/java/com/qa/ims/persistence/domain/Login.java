@@ -21,7 +21,7 @@ public class Login {
 		this.setUsername(username);
 		this.setPassword(password);
 		this.setCusId(cusId);
-		this.privilege = privilege;
+		this.setPrivilege(privilege);
 	}
 	
 	public Long getId() {return this.id;}

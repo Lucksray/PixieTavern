@@ -97,6 +97,22 @@ public class ItemDAO implements Dao<Item> {
 		return null;
 	}
 	
+	public Long read(String itemName) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM items WHERE name = ?");){
+			statement.setString(1, itemName);
+			try (ResultSet resultSet = statement.executeQuery();){
+				resultSet.next();
+				Item item = modelFromResultSet(resultSet);
+				return item.getId();
+			}
+		}catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
 	/**
 	 * Updates an item in the database
 	 * 

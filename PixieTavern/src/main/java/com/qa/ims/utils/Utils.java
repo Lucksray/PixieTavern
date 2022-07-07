@@ -65,5 +65,20 @@ public class Utils {
 		} while (doubleInput == null);
 		return doubleInput;
 	}
+	
+	public int getInt() {
+		String input = null;
+		int compare = (Integer) null;
+		int intInput = (Integer) null;
+		do {
+			try {
+				input = getString();
+				intInput = Integer.parseInt(input);
+			} catch (NumberFormatException nfe) {
+				LOGGER.info("Error - Please enter a number");
+			}
+		} while (intInput == compare);
+		return intInput;
+	}
 
 }
