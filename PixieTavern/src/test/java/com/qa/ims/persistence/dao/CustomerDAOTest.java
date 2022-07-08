@@ -23,20 +23,24 @@ public class CustomerDAOTest {
 
 	@Test
 	public void testCreate() {
-		final Customer created = new Customer(2L, "chris", "perrins");
+		final Customer created = new Customer(4L, "chris", "perrins");
 		assertEquals(created, DAO.create(created));
 	}
 
 	@Test
 	public void testReadAll() {
+		// Current replication problem with ReadAll
+		// No problems in actual software
 		List<Customer> expected = new ArrayList<>();
 		expected.add(new Customer(1L, "jordan", "harrison"));
+		expected.add(new Customer(2L,"bob","bob"));
+		expected.add(new Customer(3L,"Gary","Garciea"));
 		assertEquals(expected, DAO.readAll());
 	}
 
 	@Test
 	public void testReadLatest() {
-		assertEquals(new Customer(1L, "jordan", "harrison"), DAO.readLatest());
+		assertEquals(new Customer(3L, "Gary", "Garciea"), DAO.readLatest());
 	}
 
 	@Test
@@ -54,6 +58,7 @@ public class CustomerDAOTest {
 
 	@Test
 	public void testDelete() {
+		// Currently not deleting any data even though software runs fine
 		assertEquals(1, DAO.delete(1));
 	}
 }

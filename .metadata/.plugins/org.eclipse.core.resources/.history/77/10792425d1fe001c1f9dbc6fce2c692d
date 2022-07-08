@@ -1,0 +1,63 @@
+package com.qa.ims.persistence.dao;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.utils.DBUtils;
+
+public class LoginDAOTest {
+	
+	private final LoginDAO DAO = new LoginDAO();
+
+	@Before
+	public void setup() {
+		DBUtils.connect();
+		DBUtils.getInstance().init("src/test/resources/sql-schema.sql", "src/test/resources/sql-data.sql");
+	}
+
+	@Test
+	public void testCreate() {
+		final Login created = new Login(9L,"Greggor","fnaf",2L,"custo");
+		assertEquals(created, DAO.create(created));
+	}
+
+	@Test
+	public void testReadAll() {
+		// Currently duplicating values into items table
+		// However software works fine
+		List<Item> expected = new ArrayList<>();
+		expected.add(new Item(1L,"Dwarven Bourbon", 10.00f));
+		expected.add(new Item(2L,"Sugared Cheese", 9.00f));
+		assertEquals(expected, DAO.readAll());
+	}
+
+	@Test
+	public void testReadLatest() {
+		assertEquals(new Item(2L,"Sugared Cheese",9.00f), DAO.readLatest());
+	}
+
+	@Test
+	public void testRead() {
+		final long ID = 1L;
+		assertEquals(new Item(ID, "Dwarven Bourbon", 10.00f), DAO.read(ID));
+	}
+
+	@Test
+	public void testUpdate() {
+		final Item updated = new Item(2L,"Spyglass", 12.00f);
+		assertEquals(updated, DAO.update(updated));
+
+	}
+
+	@Test
+	public void testDelete() {
+		assertEquals(1, DAO.delete(1));
+	}
+
+}

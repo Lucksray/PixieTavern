@@ -1,0 +1,115 @@
+package com.qa.ims.controllers;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.qa.ims.controller.CustomerController;
+import com.qa.ims.controller.LoginPortal;
+import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.LoginDAO;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.utils.Utils;
+
+@RunWith(MockitoJUnitRunner.class)
+public class LoginControllerTest {
+	
+	@Mock
+	private Utils utils;
+
+	@Mock
+	private LoginDAO dao;
+	
+	@Mock
+	private CustomerDAO cusDao;
+	
+	@Mock
+	private CustomerController cusController;
+
+	@InjectMocks
+	private LoginPortal controller;
+	
+	
+//	@Before
+//	public void setup() {
+//		final String F_NAME = "gary", L_NAME = "garciea";
+//		final Customer created = new Customer(F_NAME, L_NAME);
+//
+//		Mockito.when(utils.getString()).thenReturn(F_NAME, L_NAME);
+//		Mockito.when(cusDao.create(created)).thenReturn(created);
+//
+//		assertEquals(created, cusController.create());
+//
+//		Mockito.verify(utils, Mockito.times(2)).getString();
+//		Mockito.verify(cusDao, Mockito.times(1)).create(created);
+//	}
+
+	@Test
+	public void testCreate() {
+		final String U_NAME = "gary",P_WORD = "garbear", F_NAME = "gary", S_NAME = "garciea";
+		final Long CUS_ID = 1L;
+		final Customer cusCreated = new Customer(F_NAME,S_NAME);
+		final Login created = new Login(U_NAME,P_WORD,CUS_ID);
+		// Mock of customers table is not acting as predicted
+
+		Mockito.when(utils.getString()).thenReturn(U_NAME,P_WORD,F_NAME,S_NAME);
+		Mockito.when(cusDao.create(new Customer(F_NAME,S_NAME))).thenReturn(new Customer(1L,F_NAME,S_NAME));
+		Mockito.when(cusDao.readLatest()).thenReturn(cusCreated);
+		Mockito.when(dao.create(created)).thenReturn(created);
+
+		assertEquals(created, controller.create());
+
+		Mockito.verify(utils, Mockito.times(4)).getString();
+		Mockito.verify(utils, Mockito.times(1)).getLong();
+		Mockito.verify(dao, Mockito.times(1)).create(created);
+	}
+
+	@Test
+	public void testReadAll() {
+		List<Login> logins = new ArrayList<>();
+		logins.add(new Login(1L, "jordan","harri",1L,"custo"));
+
+		Mockito.when(dao.readAll()).thenReturn(logins);
+
+		assertEquals(logins, controller.readAll());
+
+		Mockito.verify(dao, Mockito.times(1)).readAll();
+	}
+
+	@Test
+	public void testUpdate() {
+		Login updated = new Login(1L, "Terry","Berry");
+
+		Mockito.when(this.utils.getLong()).thenReturn(1L);
+		Mockito.when(this.utils.getString()).thenReturn(updated.getUsername(),updated.getPassword());
+		Mockito.when(this.dao.update(updated)).thenReturn(updated);
+
+		assertEquals(updated, this.controller.update());
+
+		Mockito.verify(this.utils, Mockito.times(1)).getLong();
+		Mockito.verify(this.utils, Mockito.times(4)).getString();
+		Mockito.verify(this.dao, Mockito.times(1)).update(updated);
+	}
+
+	@Test
+	public void testDelete() {
+		final long ID = 1L;
+
+		Mockito.when(utils.getLong()).thenReturn(ID);
+		Mockito.when(dao.delete(ID)).thenReturn(1);
+
+		assertEquals(1L, this.controller.delete());
+
+		Mockito.verify(utils, Mockito.times(1)).getLong();
+		Mockito.verify(dao, Mockito.times(1)).delete(ID);
+	}
+}

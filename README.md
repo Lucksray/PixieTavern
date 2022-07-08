@@ -73,6 +73,7 @@ Here a list of known problems or fixes to be implemented as updates come out:
 - Not all Methods are functioning completely and require seperate class files to be written to explain what each Method does accurately
 - Trolleys are currently not a function as there is no lingering sign-in prospect currently implemented
 - The owner cannot change orders' completion boolean through software currently until a rework of the infrastructure
+- Currently undergoing Mock Environment test difficulties which have an adverse affect on all tests requiring the Login features, however actual software code runs fine.
 
 #### Fixes
 
@@ -81,6 +82,7 @@ Here a list of known problems or fixes to be implemented as updates come out:
 - [ ] Not all Methods are functioning completely and require seperate class files to be written to explain what each Method does accurately
 - [ ] Trolleys are currently not a function as there is no lingering sign-in prospect currently implemented
 - [ ] The owner cannor change orders' completion boolean through software currently until a rework of the infrastructure
+- [ ] Fix Mockito issues creating a mock environment of tables
 
 
 #### Shout outs

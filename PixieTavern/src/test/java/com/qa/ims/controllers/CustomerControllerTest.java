@@ -14,7 +14,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.qa.ims.controller.CustomerController;
 import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.LoginDAO;
 import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.Utils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,6 +27,9 @@ public class CustomerControllerTest {
 
 	@Mock
 	private CustomerDAO dao;
+	
+	@Mock
+	private LoginDAO loginDao;
 
 	@InjectMocks
 	private CustomerController controller;
@@ -44,14 +49,33 @@ public class CustomerControllerTest {
 	}
 
 	@Test
-	public void testReadAll() {
+	public void testReadAllDenied() {
+		final Login login = new Login ("jordan","harr",1L);
+		final String U_NAME = "jordan", P_WORD = "harr";
 		List<Customer> customers = new ArrayList<>();
 		customers.add(new Customer(1L, "jordan", "harrison"));
-
+		Mockito.when(utils.getString()).thenReturn(U_NAME,P_WORD);
+		Mockito.when(loginDao.read(U_NAME,P_WORD)).thenReturn(login);
 		Mockito.when(dao.readAll()).thenReturn(customers);
 
 		assertEquals(customers, controller.readAll());
 
+		Mockito.verify(dao, Mockito.times(1)).readAll();
+	}
+	
+	@Test
+	public void testReadAllAccepted() {
+		final Login login = new Login ("bob","bob",2L);
+		final String U_NAME = "bob", P_WORD = "bob";
+		List<Customer> customers = new ArrayList<>();
+		customers.add(new Customer(1L, "jordan","harrison"));
+		
+		Mockito.when(utils.getString()).thenReturn(U_NAME,P_WORD);
+		Mockito.when(loginDao.read(U_NAME,P_WORD)).thenReturn(login);
+		Mockito.when(dao.readAll()).thenReturn(customers);
+		
+		assertEquals(customers, controller.readAll());
+		
 		Mockito.verify(dao, Mockito.times(1)).readAll();
 	}
 

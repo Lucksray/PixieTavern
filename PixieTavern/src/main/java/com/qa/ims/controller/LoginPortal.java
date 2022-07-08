@@ -1,5 +1,6 @@
 package com.qa.ims.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,11 +30,25 @@ public class LoginPortal implements CrudController<Login> {
 
 	@Override
 	public List<Login> readAll() {
-		List<Login> logins = loginDAO.readAll();
-		for (Login login : logins) {
-			LOGGER.info(login);
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		if ( log != null && log.getPrivilege().equals("admin")) {
+			List<Login> logins = loginDAO.readAll();
+			for (Login login : logins) {
+				LOGGER.info(login);
+			}
+			return logins;
+		} else {
+			Long id = loginDAO.readId(username, password);
+			Login login = loginDAO.read(id);
+			List<Login> logins = new ArrayList<>();
+			logins.add(login);
+			return logins;
 		}
-		return logins;
 	}
 
 	@Override
@@ -46,7 +61,9 @@ public class LoginPortal implements CrudController<Login> {
 		String firstName = utils.getString();
 		LOGGER.info("Please enter surname");
 		String surname = utils.getString();
+		System.out.println(firstName +  surname);
 		Customer customer = customerDAO.create(new Customer(firstName, surname));
+		System.out.println(customer);
 		Long cusId = customer.getId();
 		Login login = loginDAO.create(new Login(username, password, cusId));
 		LOGGER.info("Login created and paired");
@@ -55,14 +72,22 @@ public class LoginPortal implements CrudController<Login> {
 
 	@Override
 	public Login update() {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.info("Please enter the id of the login you would like to update");
+		Long id = utils.getLong();
+		LOGGER.info("Please enter a username");
+		String username = utils.getString();
+		LOGGER.info("Please enter a password");
+		String password = utils.getString();
+		Login login = loginDAO.update(new Login(id, username, password));
+		LOGGER.info("Customer Updated");
+		return login;
 	}
 
 	@Override
 	public int delete() {
-		// TODO Auto-generated method stub
-		return 0;
+		LOGGER.info("Please enter the id of the customer you would like to delete");
+		Long id = utils.getLong();
+		return customerDAO.delete(id);
 	}
 
 	public Login login(){

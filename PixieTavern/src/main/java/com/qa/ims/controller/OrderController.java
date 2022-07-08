@@ -1,5 +1,6 @@
 package com.qa.ims.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,11 +32,25 @@ public class OrderController implements CrudController<Order>{
 
 	@Override
 	public List<Order> readAll() {
-		List<Order> orders = orderDAO.readAll();
-		for (Order order : orders) {
-			LOGGER.info(order);
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		if ( log != null && log.getPrivilege().equals("admin")) {
+			List<Order> orders = orderDAO.readAll();
+			for (Order order : orders) {
+				LOGGER.info(order);
+			}
+			return orders;
+		} else {
+			Login login = loginDAO.read(username, password);
+			Order order = orderDAO.read(login.getCusId());
+			List<Order> orders = new ArrayList<>();
+			orders.add(order);
+			return orders;
 		}
-		return orders;
 	}
 	
 	@Override
@@ -63,12 +78,12 @@ public class OrderController implements CrudController<Order>{
 	public Order update() {
 		LOGGER.info("Please enter the ID of the order you would like to update");
 		Long id = utils.getLong();
-		LOGGER.info("Please enter the name of the item you would like to replace");
-		String itemName = utils.getString();
+		LOGGER.info("Please enter the ID of the item you would like to replace");
+		Long itemId = utils.getLong();
 		LOGGER.info("Please enter the amount you would like to buy");
 		int amount = utils.getInt();
 		
-		Long itemId = itemController.read(itemName);
+		//Long itemId = itemController.read(itemName);
 		Long cusId = orderDAO.readCusId(id);
 		Order order = orderDAO.update(new Order(cusId,itemId,amount));
 		return order;

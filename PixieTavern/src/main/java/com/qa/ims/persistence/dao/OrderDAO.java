@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.domain.Order;
-import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.DBUtils;
 import com.qa.ims.utils.Utils;
 
@@ -20,7 +19,6 @@ public class OrderDAO implements Dao<Order>{
 	
 	public static final Logger LOGGER = LogManager.getLogger();
 	private final Utils utils = new Utils();
-	private final LoginDAO loginDAO = new LoginDAO();
 	
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException{
@@ -35,44 +33,36 @@ public class OrderDAO implements Dao<Order>{
 	
 	@Override
 	public List<Order> readAll(){
-		LOGGER.info("Please sign in");
-		LOGGER.info("Username");
-		String username = utils.getString();
-		LOGGER.info("Password");
-		String password = utils.getString();
-		Login log = loginDAO.read(username,password);
-		if( log != null && log.getPrivilege().equals("admin")) {
-			try (Connection connection = DBUtils.getInstance().getConnection();
-					Statement statement = connection.createStatement();
-					ResultSet resultSet = statement.executeQuery("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total FROM orders INNER JOIN items ON orders.itemId = items.id;");){
-				List<Order> orders = new ArrayList<>();
-				while (resultSet.next()) {
-					orders.add(modelFromResultSet(resultSet));
-				}
-				return orders;
-			} catch (SQLException e) {
-				LOGGER.debug(e);
-				LOGGER.error(e.getMessage());
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total FROM orders INNER JOIN items ON orders.itemId = items.id;");){
+			List<Order> orders = new ArrayList<>();
+			while (resultSet.next()) {
+				orders.add(modelFromResultSet(resultSet));
 			}
-		} else {
-			LOGGER.info("You can only view your own orders");
-			try (Connection connection = DBUtils.getInstance().getConnection();
-					PreparedStatement statement = connection.prepareStatement("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total "
-							+ "FROM orders INNER JOIN items ON orders.itemId=items.id INNER JOIN customers cus ON orders.cusId=cus.id "
-							+ "WHERE orders.cusId = ?");){
-					statement.setLong(1, log.getId());
-					ResultSet resultSet = statement.executeQuery();
-				List<Order> orders = new ArrayList<>();
-				while(resultSet.next()) {
-					orders.add(modelFromResultSet(resultSet));
-				}
-				return orders;
-			} catch (SQLException e) {
-				LOGGER.debug(e);
-				LOGGER.error(e.getMessage());
-			}
+			return orders;
+		} catch (SQLException e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return null;
+	}
+	
+	public List<Order> readOwn(Long id){
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total FROM orders INNER JOIN items ON orders.itemId = items.id WHERE orders.cusId = ?");){
+			statement.setLong(1,id);
+			ResultSet resultSet = statement.executeQuery();
+			List<Order> orders = new ArrayList<>();
+			while (resultSet.next()) {
+				orders.add(modelFromResultSet(resultSet));
+			}
+			return orders;
+		} catch (SQLException e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
 	}
 	
 	public Order readLatest() {
@@ -108,7 +98,7 @@ public class OrderDAO implements Dao<Order>{
 	@Override
 	public Order read(Long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM orders WHERE id = ?");) {
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM orders WHERE id = ? LIMIT 1");) {
 			statement.setLong(1, id);
 			try (ResultSet resultSet = statement.executeQuery();) {
 				resultSet.next();
@@ -120,7 +110,7 @@ public class OrderDAO implements Dao<Order>{
 		}
 		return null;
 	}
-	
+		
 	public Long readCusId(Long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement("SELECT cusId FROM orders WHERE id = ?" );){

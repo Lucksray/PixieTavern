@@ -16,6 +16,12 @@ public class Login {
 		this.setCusId(cusId);
 	}
 	
+	public Login(Long id, String username, String password) {
+		this.setId(id);
+		this.setUsername(username);
+		this.setPassword(password);
+	}
+	
 	public Login(Long id, String username, String password, Long cusId, String privilege) {
 		this.setId(id);
 		this.setUsername(username);

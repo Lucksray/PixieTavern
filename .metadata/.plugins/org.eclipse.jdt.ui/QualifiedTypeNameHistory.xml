@@ -8,10 +8,13 @@
     <fullyQualifiedTypeName name="com.qa.ims.InitData.DataInit"/>
     <fullyQualifiedTypeName name="java.util.List"/>
     <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Item"/>
-    <fullyQualifiedTypeName name="com.qa.ims.controller.ItemController"/>
     <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.LoginPortal"/>
     <fullyQualifiedTypeName name="org.apache.logging.log4j.LogManager"/>
     <fullyQualifiedTypeName name="org.apache.logging.log4j.Logger"/>
+    <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Order"/>
+    <fullyQualifiedTypeName name="com.qa.ims.controller.ItemController"/>
+    <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Customer"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="com.qa.ims.persistence.domain.Login"/>
     <fullyQualifiedTypeName name="com.qa.ims.utils.Utils"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,192 @@
+package com.qa.ims.persistence.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.domain.Login;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.DBUtils;
+import com.qa.ims.utils.Utils;
+
+public class OrderDAO implements Dao<Order>{
+	
+	public static final Logger LOGGER = LogManager.getLogger();
+	private final Utils utils = new Utils();
+	private final LoginDAO loginDAO = new LoginDAO();
+	
+	@Override
+	public Order modelFromResultSet(ResultSet resultSet) throws SQLException{
+		Long id = resultSet.getLong("id");
+		String itemName = resultSet.getString("name");
+		float itemPrice = resultSet.getFloat("price");
+		int amount = resultSet.getInt("amount");
+		boolean confirmed = resultSet.getBoolean("comfirmed");
+		float totalCost = resultSet.getFloat("total");
+		return new Order(id, itemName, itemPrice, amount, confirmed, totalCost);
+	}
+	
+	@Override
+	public List<Order> readAll(){
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		if( log != null && log.getPrivilege().equals("admin")) {
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					Statement statement = connection.createStatement();
+					ResultSet resultSet = statement.executeQuery("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total FROM orders INNER JOIN items ON orders.itemId = items.id;");){
+				List<Order> orders = new ArrayList<>();
+				while (resultSet.next()) {
+					orders.add(modelFromResultSet(resultSet));
+				}
+				return orders;
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
+			}
+		} else {
+			LOGGER.info("You can only view your own orders");
+			try (Connection connection = DBUtils.getInstance().getConnection();
+					PreparedStatement statement = connection.prepareStatement("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total "
+							+ "FROM orders INNER JOIN items ON orders.itemId=items.id INNER JOIN customers cus ON orders.cusId=cus.id "
+							+ "WHERE orders.cusId = ?");){
+					statement.setLong(1, log.getId());
+					ResultSet resultSet = statement.executeQuery();
+				List<Order> orders = new ArrayList<>();
+				while(resultSet.next()) {
+					orders.add(modelFromResultSet(resultSet));
+				}
+				return orders;
+			} catch (SQLException e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage());
+			}
+		}
+		return new ArrayList<>();
+	}
+	
+	public Order readLatest() {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total "
+						+ "FROM orders INNER JOIN items ON orders.itemId=items.id ORDER BY orders.id DESC LIMIT 1");){
+			resultSet.next();
+			return modelFromResultSet(resultSet);
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public Order create(Order order) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("insert into orders(cusId,itemId,amount) values (?,?,?);");){
+			statement.setLong(1, order.getCusId());
+			statement.setLong(2, order.getItemId());
+			statement.setInt(3, order.getAmount());
+			statement.executeUpdate();
+			return readLatest();
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public Order read(Long id) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM orders WHERE id = ? LIMIT 1");) {
+			statement.setLong(1, id);
+			try (ResultSet resultSet = statement.executeQuery();) {
+				resultSet.next();
+				return modelFromResultSet(resultSet);
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+		
+	public Long readCusId(Long id) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT cusId FROM orders WHERE id = ?" );){
+			statement.setLong(1, id);
+			try (ResultSet resultSet = statement.executeQuery();){
+				resultSet.next();
+				Long cusId = resultSet.getLong("cusId");
+				return cusId;
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	public Order read(String firstName) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("SELECT orders.id, items.name, items.price, orders.amount, orders.confirmed, orders.amount*items.price AS total "
+						+ "FROM orders INNER JOIN items ON orders.itemId=items.id INNER JOIN customers cus ON orders.cusId=cus.id "
+						+ "WHERE cus.first_name=?");) {
+			statement.setString(1, firstName);
+			try (ResultSet resultSet = statement.executeQuery();) {
+				resultSet.next();
+				return modelFromResultSet(resultSet);
+			}
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public Order update(Order order) {
+		LOGGER.info("What is your first name?");
+		String firstName = utils.getString();
+		
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection
+						.prepareStatement("UPDATE orders SET itemId = ?, amount = ? WHERE id = ?");) {
+			statement.setLong(1, order.getItemId());
+			statement.setInt(2, order.getAmount());
+			Order prevOrder = read(firstName);			
+			statement.setLong(3, prevOrder.getId());
+			statement.executeUpdate();
+			return read(order.getId());
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public int delete(long id) {
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement("DELETE FROM orders WHERE id = ?");) {
+			statement.setLong(1, id);
+			return statement.executeUpdate();
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return 0;
+	}
+	
+
+}

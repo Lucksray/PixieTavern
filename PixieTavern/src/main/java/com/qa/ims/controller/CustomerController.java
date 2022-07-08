@@ -1,12 +1,15 @@
 package com.qa.ims.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.LoginDAO;
 import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Login;
 import com.qa.ims.utils.Utils;
 
 /**
@@ -19,6 +22,7 @@ public class CustomerController implements CrudController<Customer> {
 
 	private CustomerDAO customerDAO;
 	private Utils utils;
+	private LoginDAO loginDAO = new LoginDAO();
 
 	public CustomerController(CustomerDAO customerDAO, Utils utils) {
 		super();
@@ -31,11 +35,25 @@ public class CustomerController implements CrudController<Customer> {
 	 */
 	@Override
 	public List<Customer> readAll() {
-		List<Customer> customers = customerDAO.readAll();
-		for (Customer customer : customers) {
-			LOGGER.info(customer);
+		LOGGER.info("Please sign in");
+		LOGGER.info("Username");
+		String username = utils.getString();
+		LOGGER.info("Password");
+		String password = utils.getString();
+		Login log = loginDAO.read(username,password);
+		if ( log != null && log.getPrivilege().equals("admin")) {
+			List<Customer> customers = customerDAO.readAll();
+			for (Customer customer : customers) {
+				LOGGER.info(customer);
+			}
+			return customers;
+		} else {
+			Long id = customerDAO.readId(username,password);
+			Customer customer = customerDAO.read(id);
+			List<Customer> customers = new ArrayList<>();
+			customers.add(customer);
+			return customers;
 		}
-		return customers;
 	}
 
 	/**
